@@ -101,8 +101,8 @@ class Main extends egret.DisplayObjectContainer {
         sky.height = stageH;
 
         let topMask = new egret.Shape();
-        topMask.graphics.beginFill(0x000000, 0.5);
-        topMask.graphics.drawRect(0, 0, stageW, 172);
+        topMask.graphics.beginFill(0x000000,0.5);
+        topMask.graphics.drawRect(0,0,stageW,172);
         topMask.graphics.endFill();
         topMask.y = 33;
         this.addChild(topMask);
@@ -126,7 +126,7 @@ class Main extends egret.DisplayObjectContainer {
         colorLabel.textColor = 0xffffff;
         colorLabel.width = stageW - 172;
         colorLabel.textAlign = "center";
-        colorLabel.text = "Hello Egret";
+        colorLabel.text = "Hello World!";
         colorLabel.size = 24;
         colorLabel.x = 172;
         colorLabel.y = 80;
@@ -147,7 +147,110 @@ class Main extends egret.DisplayObjectContainer {
         // Get asynchronously a json configuration file according to name keyword. 
         // As for the property of name please refer to the configuration file of resources/resource.json.
         //key completedCallback 
-        RES.getResAsync("description_json", this.startAnimation, this)
+        RES.getResAsync("description_json", this.startAnimation, this);
+
+        var offsetX:number;
+        var offsetY:number;
+
+        // 手指在任意显示对象上按下，该显示对象就会移到舞台显示列表的顶部 所以拖动的对象始终出现在顶部
+        var draggedObject:egret.Shape = new egret.Shape();
+
+        var circle = new egret.Shape();
+        circle.graphics.beginFill(0xffffff,0.5);
+        circle.graphics.drawCircle(100,100,50);
+        circle.graphics.endFill();
+        this.addChild(circle);
+        circle.x = 136;
+        circle.y = 368;
+
+        circle.touchEnabled = true;
+        // 手指按到屏幕 出发startMove方法
+        circle.addEventListener(egret.TouchEvent.TOUCH_BEGIN,startMove,this);
+        // 手指离开屏幕 出发stopMove方法
+        circle.addEventListener(egret.TouchEvent.TOUCH_END,stopMove,this);
+
+        var square:egret.Shape = new egret.Shape();
+        square.graphics.beginFill(0xffffff);
+        square.graphics.drawRect(0,0,100,100);
+        square.graphics.endFill();
+        this.addChild(square);
+        
+        square.touchEnabled = true;
+        // 手指按到屏幕 出发startMove方法
+        square.addEventListener(egret.TouchEvent.TOUCH_BEGIN,startMove,this);
+        // 手指离开屏幕 出发stopMove方法
+        square.addEventListener(egret.TouchEvent.TOUCH_END,stopMove,this);
+
+        function startMove(event:egret.TouchEvent):void{
+            draggedObject = event.currentTarget;
+
+            offsetX = event.stageX - draggedObject.x;
+            offsetY = event.stageY - draggedObject.y;
+            this.stage.addEventListener(egret.TouchEvent.TOUCH_MOVE,onMove,this);
+        }   
+
+        function stopMove(event:egret.TouchEvent):void{
+            this.stage.removeEventListener(egret.TouchEvent.TOUCH_MOVE,onMove,this);
+        }   
+
+        function onMove(event:egret.TouchEvent):void{
+            let stageW:number = this.stage.stageWidth;
+            let stageH:number = this.stage.stageHeight;
+
+            var x = event.stageX - offsetX;
+            if(x >= 50 && x <= stageW - 100){
+                draggedObject.x = x;
+            }
+            var y = event.stageY - offsetY;
+            if(y >= 50 && y <= stageH - 100){
+                draggedObject.y = y;
+            }
+            console.log('stageW:'+stageW+' stageH:'+stageH+' x:'+draggedObject.x+' y:'+draggedObject.y+' offsetX:'+offsetX+' offsetY:'+offsetY);
+        }  
+
+
+        // 可移动显示对象
+        var bigText:egret.TextField = new egret.TextField();
+        bigText.text = "平移和滚动显示对象，平移和滚动显示对象";
+        // scrollRect是Rectangle类的实例 
+        bigText.scrollRect = new egret.Rectangle(0,0,200,50);
+        bigText.cacheAsBitmap = true;
+        this.addChild(bigText);
+
+        // 创建一个按钮 点击后控制文本内容向左移动
+        var btnLeft:egret.Shape = new egret.Shape();
+        btnLeft.graphics.beginFill(0xcccc01);
+        btnLeft.graphics.drawRect(0,0,50,50);
+        btnLeft.graphics.endFill();
+        btnLeft.x = 50;
+        btnLeft.y = 100;
+        this.addChild(btnLeft);
+        btnLeft.touchEnabled = true;
+        btnLeft.addEventListener(egret.TouchEvent.TOUCH_TAP,onScroll,this);
+
+        var btnRight: egret.Shape = new egret.Shape();
+        btnRight.graphics.beginFill(0x01cccc);
+        btnRight.graphics.drawRect(0,0,50,50);
+        btnRight.graphics.endFill();
+        btnRight.x = 150;
+        btnRight.y = 100;
+        this.addChild(btnRight);
+        btnRight.touchEnabled = true;
+        btnRight.addEventListener(egret.TouchEvent.TOUCH_TAP, onScroll, this);
+
+        function onScroll(e:egret.TouchEvent):void{
+            var rect:egret.Rectangle = bigText.scrollRect;
+            switch(e.currentTarget){
+                case btnLeft:
+                    rect.x += 20;
+                    break;
+                case btnRight:
+                    rect.x -= 20;
+                    break;                    
+            }
+            // 修改对象可显示区域 修改scrollRect属性 可以使内容左右平移或上下滚动
+            bigText.scrollRect = rect;
+        }
     }
 
     /**

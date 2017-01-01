@@ -67,4 +67,14 @@ class Main extends egret.DisplayObjectContainer{
 ![](http://cdn.dev.egret.com/egret-docs/Engine2D/displayObject/classes/556534d84ca7f.png)
 
 
-[到此待续](http://developer.egret.com/cn/github/egret-docs/Engine2D/displayObject/classes/index.html)
+### 锚点
+> 默认锚点在左上角
+> anchorOffsetX = 50; 锚点改为(50,0)
+> anchorOffsetY = 50; 锚点改为(0,50)
+
+实际效果看着是位置变动，但是x,y的值不变
+
+### 位置
+> x , y 默认创建显示对象时，x,y 均设置为0 ，从而可将对象放在其父内容的左上角
+> x , y 属性始终是指显示对象相对于其父显示对象坐标轴的(0,0)坐标的位置
+> 

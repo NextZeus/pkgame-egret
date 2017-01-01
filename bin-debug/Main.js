@@ -112,7 +112,7 @@ var Main = (function (_super) {
         colorLabel.textColor = 0xffffff;
         colorLabel.width = stageW - 172;
         colorLabel.textAlign = "center";
-        colorLabel.text = "Hello Egret";
+        colorLabel.text = "Hello World!";
         colorLabel.size = 24;
         colorLabel.x = 172;
         colorLabel.y = 80;
@@ -132,6 +132,91 @@ var Main = (function (_super) {
         // As for the property of name please refer to the configuration file of resources/resource.json.
         //key completedCallback 
         RES.getResAsync("description_json", this.startAnimation, this);
+        var offsetX;
+        var offsetY;
+        // 手指在任意显示对象上按下，该显示对象就会移到舞台显示列表的顶部 所以拖动的对象始终出现在顶部
+        var draggedObject = new egret.Shape();
+        var circle = new egret.Shape();
+        circle.graphics.beginFill(0xffffff, 0.5);
+        circle.graphics.drawCircle(100, 100, 50);
+        circle.graphics.endFill();
+        this.addChild(circle);
+        circle.x = 136;
+        circle.y = 368;
+        circle.touchEnabled = true;
+        // 手指按到屏幕 出发startMove方法
+        circle.addEventListener(egret.TouchEvent.TOUCH_BEGIN, startMove, this);
+        // 手指离开屏幕 出发stopMove方法
+        circle.addEventListener(egret.TouchEvent.TOUCH_END, stopMove, this);
+        var square = new egret.Shape();
+        square.graphics.beginFill(0xffffff);
+        square.graphics.drawRect(0, 0, 100, 100);
+        square.graphics.endFill();
+        this.addChild(square);
+        square.touchEnabled = true;
+        // 手指按到屏幕 出发startMove方法
+        square.addEventListener(egret.TouchEvent.TOUCH_BEGIN, startMove, this);
+        // 手指离开屏幕 出发stopMove方法
+        square.addEventListener(egret.TouchEvent.TOUCH_END, stopMove, this);
+        function startMove(event) {
+            draggedObject = event.currentTarget;
+            offsetX = event.stageX - draggedObject.x;
+            offsetY = event.stageY - draggedObject.y;
+            this.stage.addEventListener(egret.TouchEvent.TOUCH_MOVE, onMove, this);
+        }
+        function stopMove(event) {
+            this.stage.removeEventListener(egret.TouchEvent.TOUCH_MOVE, onMove, this);
+        }
+        function onMove(event) {
+            var stageW = this.stage.stageWidth;
+            var stageH = this.stage.stageHeight;
+            var x = event.stageX - offsetX;
+            if (x >= 50 && x <= stageW - 100) {
+                draggedObject.x = x;
+            }
+            var y = event.stageY - offsetY;
+            if (y >= 50 && y <= stageH - 100) {
+                draggedObject.y = y;
+            }
+            console.log('stageW:' + stageW + ' stageH:' + stageH + ' x:' + draggedObject.x + ' y:' + draggedObject.y + ' offsetX:' + offsetX + ' offsetY:' + offsetY);
+        }
+        // 可移动显示对象
+        var bigText = new egret.TextField();
+        bigText.text = "平移和滚动显示对象，平移和滚动显示对象";
+        bigText.scrollRect = new egret.Rectangle(0, 0, 200, 50);
+        bigText.cacheAsBitmap = true;
+        this.addChild(bigText);
+        // 创建一个按钮 点击后控制文本内容向左移动
+        var btnLeft = new egret.Shape();
+        btnLeft.graphics.beginFill(0xcccc01);
+        btnLeft.graphics.drawRect(0, 0, 50, 50);
+        btnLeft.graphics.endFill();
+        btnLeft.x = 50;
+        btnLeft.y = 100;
+        this.addChild(btnLeft);
+        btnLeft.touchEnabled = true;
+        btnLeft.addEventListener(egret.TouchEvent.TOUCH_TAP, onScroll, this);
+        var btnRight = new egret.Shape();
+        btnRight.graphics.beginFill(0x01cccc);
+        btnRight.graphics.drawRect(0, 0, 50, 50);
+        btnRight.graphics.endFill();
+        btnRight.x = 150;
+        btnRight.y = 100;
+        this.addChild(btnRight);
+        btnRight.touchEnabled = true;
+        btnRight.addEventListener(egret.TouchEvent.TOUCH_TAP, onScroll, this);
+        function onScroll(e) {
+            var rect = bigText.scrollRect;
+            switch (e.currentTarget) {
+                case btnLeft:
+                    rect.x += 20;
+                    break;
+                case btnRight:
+                    rect.x -= 20;
+                    break;
+            }
+            bigText.scrollRect = rect;
+        }
     };
     /**
      * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。
