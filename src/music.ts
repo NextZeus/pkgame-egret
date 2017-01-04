@@ -1,6 +1,7 @@
 class Music extends egret.DisplayObjectContainer{
     private _sound:egret.Sound;
     private _channel:egret.SoundChannel;
+    private _pauseTime:number;
 
     constructor(){
         super();
@@ -8,7 +9,7 @@ class Music extends egret.DisplayObjectContainer{
     }
 
     private onAddToStage(event:egret.Event){
-
+        this.loadSound();
     }
 
     private loadSound():void{
@@ -49,5 +50,7 @@ class Music extends egret.DisplayObjectContainer{
     private init():void{
 
     }
+
+    // http://developer.egret.com/cn/example/egret2d/index.html#120-media-audio
 
 }
